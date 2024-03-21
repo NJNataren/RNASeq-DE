@@ -21,8 +21,11 @@ set -e
 #
 #########################################################
 
-module load python3/3.9.2
-export PYTHONPATH=$HOME/.local/lib/python3.9/site-packages
+# To use the the miniconda python for a specific conda environment (such as my environment 'rna-seq-de' where
+# I have uninstalled software for this pipeline
+# the path to the miniconda environment needs to be exported to the bash environment PATH with the line below.
+# Provide the name of your environment in the path below
+export PYTHONPATH=$HOME/miniconda3/envs/<provide-name-of-conda-environment>/bin/python
 
 sampleid=`echo $1 | cut -d ',' -f 1`
 bam=`echo $1 | cut -d ',' -f 2`
@@ -31,4 +34,5 @@ out=`echo $1 | cut -d ',' -f 4`
 
 echo "$(date): Running RSeQC's bam_stat.py to collect a summary of alignment metrics. Sample ID:${sampleid}, BAM:${bam}, Log file:${logfile}, Out:${out}" >> ${logfile} 2>&1
 
-$HOME/.local/bin/bam_stat.py -i ${bam} > ${out} 2>${logfile} 
+# Here, the miniconda python is called to execute the rseqc bam_stat.py script
+python $HOME/miniconda3/pkgs/rseqc-5.0.3-py310h4b81fae_0/bin/bam_stat.py -i ${bam} > ${out} 2>${logfile}
