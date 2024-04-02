@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 set -e
 
@@ -47,8 +47,8 @@ mkdir -p ${logs}
 rm -rf ${single}
 rm -rf ${paired}
 
-bbtools_path="$(module display bbtools | grep -m 1 PATH | awk '{print $3}')"
-adapters=$bbtools_path/resources/adapters.fa
+# The path to the bbtools adapters.fa application is provided below
+# bbtools is part of the bbmap version 38.93 package
 
 while read -r fastq sampleid dataset reference seqcentre platform run_type library; do
 	# SINGLE end data
