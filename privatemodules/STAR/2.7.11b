@@ -1,0 +1,10 @@
+#%Module1.0
+
+#set    basepath        $env(HOME)/src/STAR-2.7.11b/STAR-2.7.11b/bin/Linux_x86_64/
+# basepath below only works if star is installed on base conda
+set     basepath        $env(HOME)/miniconda3/pkgs/star-2.7.11b-h43eeafb_0/bin
+set     version 2.7.11b
+set     path    $basepath/$version
+
+prepend-path    PATH    $path/bin
+prepend-path MANPATH    $path/share/man
