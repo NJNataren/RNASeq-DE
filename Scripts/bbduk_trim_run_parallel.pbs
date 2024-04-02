@@ -29,18 +29,19 @@ set -e
 # -l walltime=02:00:00,ncpus=48,mem=190GB,wd
 # -q normal
 
-#PBS -P <project>
+#PBS -l jobfs=200GB
+#PBS -P bt64
 #PBS -N bbduk_trim
 #PBS -l walltime=02:00:00,ncpus=48,mem=190GB,wd
 #PBS -q normal
 #PBS -W umask=022
-#PBS -l storage=scratch/<project>
+#PBS -l storage=scratch/bt64
 #PBS -o ./Logs/bbduk_trim.o
 #PBS -e ./Logs/bbduk_trim.e
 
-module load openmpi/4.1.0
+module load openmpi/4.1.5
 module load nci-parallel/1.0.0a
-module load bbtools/37.98
+module load bbmap/38/93
 
 mkdir -p ./Logs
 
