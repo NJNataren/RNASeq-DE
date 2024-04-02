@@ -1,0 +1,8 @@
+#%Module1.0
+
+set     basepath        $env(HOME)/miniconda3/pkgs/rseqc-5.0.3-py310h4b81fae_0/bin
+set     version 5.0.3
+set     path    $basepath/$version
+
+prepend-path    PATH    $path/bin
+prepend-path    MANPATH $path/share/man
