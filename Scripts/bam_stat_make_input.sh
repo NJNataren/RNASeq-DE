@@ -32,16 +32,17 @@ cohort=$(basename $config | cut -d'.' -f1)
 logdir=./Logs/bam_stat
 INPUTS=./Inputs
 input_file=${INPUTS}/bam_stat.inputs
+bamdir=../${cohort}_final_bams
 outdir=../QC_reports/${cohort}_final_bams
 
-mkdir -p ${INPUTS} ${logdir}
+mkdir -p ${INPUTS} ${outdir} ${logdir}
 
 rm -rf ${input_file}
 
 tasks=()
 while read -r fastq sampleid dataset reference seqcentre platform run_type library; do
 	if [[ ! ${fastq} =~ ^#.*$ ]]; then
-		bam=${outdir}/${sampleid}.final.bam
+  		bam=${bamdir}/${sampleid}.final.bam
 		logfile=${logdir}/${sampleid}.log
 		out=${outdir}/${sampleid}_bam_stat.txt
 		tasks+=("${sampleid},${bam},${logfile},${out}")
