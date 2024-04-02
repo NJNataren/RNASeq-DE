@@ -25,18 +25,21 @@ set -e
 # RSeQC's bam_stat.py to collect a summary of stats on a BAM file.
 # See http://rseqc.sourceforge.net/
 
-#PBS -P <project>
+#PBS -P bt64
 #PBS -N bam_stat
 #PBS -l walltime=04:00:00,ncpus=112,mem=512GB,wd
 #PBS -q normalbw
 #PBS -W umask=022
-#PBS -l storage=scratch/<project>
+#PBS -l storage=scratch/bt64
 #PBS -o ./Logs/bam_stat.o
 #PBS -e ./Logs/bam_stat.e
 
+# Set the PBS working directory to script directory where jobs are queued
+PBS_O_WORKDIR=/scratch/bt64/nn8573/test_dir/RNASeq-DE/Scripts
+cd ${PBS_O_WORKDIR}
+
 module load openmpi/4.0.2
 module load nci-parallel/1.0.0a
-module load python3/3.9.2
 
 mkdir -p ./Logs
 
