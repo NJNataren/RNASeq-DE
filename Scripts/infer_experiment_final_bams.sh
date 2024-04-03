@@ -21,7 +21,16 @@ set -e
 #
 #########################################################
 
-module load python3/3.9.2
+# Set the PBS_O_WORKDIR to the scripts directory where the jobs are being queued from
+PBS_O_WORKDIR=/scratch/bt64/nn8573/test_dir/RNASeq-DE/Scripts
+cd ${PBS_O_WORKDIR}
+
+# Activate conda base to access rseqc
+export PATH=$HOME/miniconda3/envs/rnaseq-de/bin:$PATH
+source activate rnaseq-de
+
+# Export the rnaseq-de conda env python to the shell
+export PYTHONPATH=$HOME/miniconda3/envs/rnaseq-de/bin/python
 
 if [ -z "$1" ]
 then
@@ -40,7 +49,7 @@ logdir=./Logs/infer_experiment
 mkdir -p ${logdir} ${outdir}
 
 # infer_experiment.sh in parallel on login node (48 parallel tasks)
-ls $bamdir/*final.bam | xargs -i -n 1 -P 48 sh -c 'sample=$(basename {} | cut -d'.' -f1) && dir=$(basename $(dirname {} )) && infer_experiment.py -r ../Reference/GRCh38/Homo_sapiens.GRCh38.103.bed -i {} 1>../QC_reports/${dir}_infer_experiment/${sample}.txt 2>./Logs/infer_experiment/$sample.log'
+ls $bamdir/*final.bam | xargs -i -n 1 -P 48 sh -c 'sample=$(basename {} | cut -d'.' -f1) && dir=$(basename $(dirname {} )) && infer_experiment.py -r ../Reference/GRCh38/Homo_sapiens.GRCh38.111.bed -i {} 1>../QC_reports/${dir}_infer_experiment/${sample}.txt 2>./Logs/infer_experiment/$sample.log'
 
 # Collect results into matrix table
 echo "#FILE REVERSE FORWARD" > ${outfile}
