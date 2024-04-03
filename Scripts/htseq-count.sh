@@ -29,8 +29,9 @@ strand=`echo $1 | cut -d ',' -f 5`
 logfile=`echo $1 | cut -d ',' -f 6`
 NCPUS=`echo $1 | cut -d ',' -f 7`
 
-module load python3/3.8.5
-export PYTHONPATH=$HOME/.local/lib/python3.8/site-packages
+# Provide path to miniconda python bin for conda environment where htseq is installed
+# Below, the path is provided for the miniconda3 'rnaseq-de' environment in which I have istalled htseq
+export PYTHONPATH=$HOME/miniconda3/envs/rnaseq-de/bin/python
 
 echo $PYTHONPATH
 
@@ -42,4 +43,5 @@ rm -rf ${logfile}
 
 echo "$(date): Running htseq-count to obtain raw counts. Sample ID:${sampleid}, BAM:${bam}, Cohort:${cohort}, Reference:${gtf}, Strand:${strand}, Output:${out}, Log file:${logfile}, NCPUS:${NCPUS}" >> ${logfile} 2>&1 
 
-$HOME/.local/bin/htseq-count -f bam -r pos --mode=union -s ${strand} ${bam} ${gtf} > ${out}
+# Call the htseq-count package
+htseq-count -f bam -r pos --mode=union -s ${strand} ${bam} ${gtf} > ${out}
