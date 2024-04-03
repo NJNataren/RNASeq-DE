@@ -42,12 +42,12 @@ rm -rf ${input_file}
 while read -r fastq sampleid dataset reference seqcentre platform run_type library; do
 	if [[ ! ${fastq} =~ ^#.*$ ]]; then
 		basename=$(basename "$fastq" | cut -d. -f1)
-		in=../${dataset}_trimmed/${fastq}
+		
 		logdir=${logs}/${cohort}/${dataset}_trimmed
 		logfile=${logdir}/${basename}.log
 		out=../${dataset}\_fastQC_trimmed
 		bytes=$(ls -s "${in}" | awk '{print $1}')
-
+		in=../${dataset}_trimmed/${basename}_trimmed.fastq.gz
 		mkdir -p ${out}
 		mkdir -p ${logdir}
 
