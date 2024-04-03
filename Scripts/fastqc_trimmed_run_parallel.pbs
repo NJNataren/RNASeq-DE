@@ -32,11 +32,15 @@ set -e
 #PBS -l walltime=02:00:00,ncpus=30,mem=150GB,wd
 #PBS -q normal
 #PBS -W umask=022
-#PBS -l storage=scratch/er01+scratch/vv63
+#PBS -l storage=scratch/<project>
 #PBS -o ./Logs/fastqc_trimmed.o
 #PBS -e ./Logs/fastqc_trimmed.e
 
-module load openmpi/4.0.2
+# Set the PBS_O_WORKDIR to the scripts directory where the jobs are being queued from
+PBS_O_WORKDIR=/scratch/bt64/nn8573/test_dir/RNASeq-DE/Scripts
+cd ${PBS_O_WORKDIR}
+
+module load openmpi/4.1.0
 module load nci-parallel/1.0.0a
 module load fastqc/0.11.7
 
