@@ -37,9 +37,18 @@ set -e
 #PBS -o ./Logs/read_distribution.o
 #PBS -e ./Logs/read_distribution.e
 
-module load openmpi/4.0.2
+# Set the PBS_O_WORKDIR to the scripts directory where the jobs are being queued from
+PBS_O_WORKDIR=/scratch/bt64/nn8573/test_dir/RNASeq-DE/Scripts
+cd ${PBS_O_WORKDIR}
+
+# Export the miniconda3 environment path
+export PATH=$HOME/miniconda3/envs/rnaseq-de/bin:$PATH
+# Activate conda base to access rseqc
+source activate rnaseq-de
+
+module load openmpi/4.1.0
 module load nci-parallel/1.0.0a
-module load python3/3.9.2
+module load RSeQC/5.0.3
 
 mkdir -p ./Logs
 
