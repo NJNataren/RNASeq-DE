@@ -42,7 +42,7 @@ set -e
 #PBS -e ./Logs/star_index.e
 
 # Load modules
-module load star/2.7.3a
+module load STAR/2.7.11b
 
 mkdir -p ./Logs
 
@@ -50,7 +50,7 @@ mkdir -p ./Logs
 dir=../Reference/GRCh38
 # ref and gtf files under dir
 ref=Homo_sapiens.GRCh38.dna.primary_assembly.fa
-gtf=Homo_sapiens.GRCh38.103.gtf
+gtf=Homo_sapiens.GRCh38.111.gtf
 # sjdbOverhang = ReadLength-1 (for creating splice junction database)
 overhang=149
 
