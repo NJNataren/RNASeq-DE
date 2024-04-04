@@ -21,8 +21,9 @@ set -e
 #
 #########################################################
 
-module load python3/3.9.2
-export PYTHONPATH=$HOME/.local/lib/python3.9/site-packages
+# Export the conda environment version of python so that the conda package will run using this
+# Below the miniconda3 python for the conda environment 'rnaseq-de' is being used
+export PYTHONPATH=$HOME/miniconda3/envs/rnaseq-de/bin/python
 
 sampleid=`echo $1 | cut -d ',' -f 1`
 bam=`echo $1 | cut -d ',' -f 2`
@@ -32,4 +33,6 @@ out=`echo $1 | cut -d ',' -f 5`
 
 echo "$(date): Running RSeQC's read_distribution.py. Sample ID:${sampleid}, BAM:${bam}, BED:${bed}, Log file:${logfile}, Out:${out}" > ${logfile} 2>&1
 
-$HOME/.local/bin/read_distribution.py -i ${bam} -r ${bed} > ${out} 2>>${logfile}
+# Below I am calling the read_distribution.py from the rseqc package, using the python command for the miniconda3 python version 
+# used by the conda rnaseq-de environment
+python /home/567/nn8573/miniconda3/pkgs/rseqc-5.0.3-py310h4b81fae_0/bin/read_distribution.py -i ${bam} -r ${bed} > ${out} 2>>${logfile}
