@@ -57,15 +57,20 @@ if(@empty){
 
 print "Saving gene level TPMs into memory...\n";
 my $genecountshash = {};
-my $i=0;
-my @allgenes; my $gene; my $count;
+my $i=1;
+my @allgenes;
 foreach my $sampleid (@sampleids){
         my $file="$tpmdir\/$sampleid\.final_genes.out";
-        open(FILE,$file)||die "Could not open $file: $!\n";
+        open(FILE,'<',$file)||die "Could not open $file: $!\n";
         my $header=<FILE>;
 	while(<FILE>){
 		chomp;
                 my(@col)=split(" ",$_);
+		# Check for column acces, error message if data does not contain enough columns
+  		if(@col < 7) {
+                        warn "Line does not contain enough columns: $_\n";
+                        next;
+                }
 		my $gene=$col[0];
 		my $tpm=$col[6];
 		if($i==1){
@@ -74,6 +79,7 @@ foreach my $sampleid (@sampleids){
 		}
 		$genecountshash->{$sampleid}->{$gene}->{tpm}=$tpm;
 	}
+ 	close(FILE); #Close file handle as soon as practical
         $i++;
 }
 my $num_samples=scalar(@sampleids);
