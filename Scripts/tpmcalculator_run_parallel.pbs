@@ -30,9 +30,18 @@ set -e
 #PBS -o ./Logs/tpmcalculator.o
 #PBS -e ./Logs/tpmcalculator.e
 
+#Set the PBS_O_WORKDIR so that relative files work when queueing from the /Scripts directory
+PBS_O_WORKDIR=/scratch/bt64/nn8573/test_dir/RNASeq-DE/Scripts
+# and navigate to that directory
+cd ${PBS_O_WORKDIR}
+
+#activate conda environment 'rnaseq-de' to access the TPMCalculator package
+export PATH=$HOME/miniconda3/envs/rnaseq-de/bin:$PATH
+source activate rnaseq-de
+
 module load openmpi/4.1.0
 module load nci-parallel/1.0.0a
-module load bamtools/2.5.1
+module load bamtools/2.5.2
 
 mkdir -p ./Logs
 
