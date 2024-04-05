@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#!/usr/bin/perl
 
 use strict;
 use warnings;
@@ -56,11 +56,11 @@ if(@empty){
 print "Saving transcript level TPMs into memory...\n";
 my $transcriptcountshash = {};
 my $geneidhash = {};
-my $i=0;
-my @alltranscripts; my $gene; my $transcript;  my $count;
+my $i=1;
+my @alltranscripts; my $gene; my $transcript;
 foreach my $sampleid (@sampleids){
         my $file="$tpmdir\/$sampleid\.final_transcripts.out";
-	open(FILE,$file)||die "Could not open $file: $!\n";
+	open(FILE,'<',$file)||die "Could not open $file: $!\n";
         my $header=<FILE>;
 	while(<FILE>){
 		chomp;
@@ -76,6 +76,7 @@ foreach my $sampleid (@sampleids){
 		# Save ensembl gene ID for each transcript ID
 		$geneidhash->{$transcript}->{geneid}=$gene;
 	}
+ 	close(FILE):=; # Close the file handle
         $i++;
 }
 
