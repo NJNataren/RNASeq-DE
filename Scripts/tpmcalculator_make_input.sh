@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 set -e
 
@@ -30,7 +30,7 @@ fi
 config=$1
 cohort=$(basename $config | cut -d'.' -f1)
 logdir=../Scripts/Logs/TPMCalculator
-gtf=../Reference/GRCh38/Homo_sapiens.GRCh38.103.gtf
+gtf=../Reference/GRCh38/Homo_sapiens.GRCh38.111.gtf
 INPUTS=./Inputs
 input_file=${INPUTS}/tpmcalculator.inputs
 bamdir=../${cohort}_final_bams
