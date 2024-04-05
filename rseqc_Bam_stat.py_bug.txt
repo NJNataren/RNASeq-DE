@@ -1,0 +1,3 @@
+# There was a bug in the python script itself! See my comment in /home/567/nn8573/miniconda3/pkgs/rseqc-5.0.3-py310h4b81fae_0/bin/bam_stat.py
+# in the def main(): section "if not os.path.exists(input_file):" was changed to "if not os.path.exists(options.input_file):" as it was returning error "print('\n\n' + input_file + " does NOT exists" + '\n', file=sys.stderr)
+# NameError: name 'input_file' is not defined"
