@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 set -e
 
@@ -30,6 +30,10 @@ set -e
 #PBS -l wd
 #PBS -o ./Logs/tpmcalculator_matrix.o
 #PBS -e ./Logs/tpmcalculator_matrix.e
+
+# Set the PBS_O_WORKDIR to directory that the scripts are being queued from
+PBS_O_WORKDIR=/scratch/bt64/nn8573/test_dir/RNASeq-DE/Scripts
+cd ${PBS_O_WORKDIR}
 
 # Replace with path to your TPMCalculator output
 tpmdir=../cohort_TPMCalculator
