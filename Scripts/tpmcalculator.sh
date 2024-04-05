@@ -21,6 +21,10 @@ set -e
 #
 #########################################################
 
+# Export the miniconda3 bin path to bash so that conda TPMCalculator package
+# installed on the 'rnaseq-de' environment is accessible
+export PYTHONPATH=$HOME/miniconda3/envs/rnaseq-de/bin/python
+
 sampleid=`echo $1 | cut -d ',' -f 1`
 bam=`echo $1 | cut -d ',' -f 2`
 gtf=`echo $1 | cut -d ',' -f 3`
