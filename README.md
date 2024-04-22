@@ -151,7 +151,7 @@ This step performs FastQC to obtain quality reports per input FASTQ file. For mu
 To run FastQC for all raw FASTQ files in your `cohort.config` file, create input file for parallel processing:
 
 ```
-sh fastqc_make_input.sh cohort.config
+bash fastqc_make_input.sh cohort.config
 ```
 
 Edit `fastqc_run_parallel.pbs` by:
@@ -189,7 +189,7 @@ Task scripts `bbduk_trim_paired.sh` and `bbduk_trim_single.sh`are apply the foll
 To run BBDuk trim for FASTQ files in `cohort.config`, create input file for parallel processing:
 
 ```
-sh bbduk_trim_make_input.sh cohort.config
+bash bbduk_trim_make_input.sh cohort.config
 ```
 
 Edit `bbduk_trim_run_parallel.pbs` by:
@@ -209,7 +209,7 @@ qsub bbduk_trim_run_parallel.pbs
 You can check the quality of the data after trimming using:
   
 ```
-sh fastqc_trimmed_make_input.sh cohort.config
+bash fastqc_trimmed_make_input.sh cohort.config
 ```
 
 Edit `fastqc_run_parallel.pbs` by:
@@ -261,7 +261,7 @@ This step will map trimmed FASTQ files to a prepared reference genome using STAR
 To map all trimmed reads for to references specified in `cohort.config` file, prepare inputs for parallel processing by:
   
 ```
-sh star_align_trimmed_make_input.sh cohort.config
+bash star_align_trimmed_make_input.sh cohort.config
 ```
   
 `star_align_run_parallel.pbs` run task scripts `star_align_paired.sh` and/or `star_align_single.sh` and by default:
@@ -314,7 +314,7 @@ This step merges sample lane level BAMs into sample level BAMs (skipped if sampl
 To obtain final BAMs for sample IDs in `cohort.config`, create input file for parallel processing:
 
 ```
-sh samtools_merge_index_make_input.sh cohort.config
+bash samtools_merge_index_make_input.sh cohort.config
 ```
 
 Edit `samtools_merge_index_run_parallel.pbs` by:
@@ -345,7 +345,7 @@ This step uses RSeQC's infer_experiment.py to infer the library strand awareness
 The `infer_experiment_final_bams.sh` script processes multiple BAMs in parallel on the login node/command line. With the path to the directory containing `*final.bam` files, e.g. ../cohort_final_bams:
   
 ```
-sh infer_experiment_final_bams.sh ../cohort_final_bams
+bash infer_experiment_final_bams.sh ../cohort_final_bams
 ```
   
 #### RSeQC's read_distribution.py
@@ -358,7 +358,7 @@ This step uses RSeQC's read_distribution.py to check the distribution of aligned
 To obtain `read_distribution.py` reports for sample BAMs in `cohort.config`, create input file for parallel processing:
 
 ```
-sh read_distribution_make_input.sh cohort.config
+bash read_distribution_make_input.sh cohort.config
 ```
 `read_distribution_run_parallel.pbs` will run task script `read_distribution.sh` with `read_distribution.py` default settings applied.
  
@@ -371,7 +371,7 @@ sh read_distribution_make_input.sh cohort.config
 Once `read_distribution_run_parallel.pbs` is complete, you can summarize reports using:
 
 ```
-sh multiqc.sh ../QC_reports/cohort_read_distribution
+bash multiqc.sh ../QC_reports/cohort_read_distribution
 ```
   
 #### RSeQC's bam_stat.py (optional)
@@ -384,7 +384,7 @@ This step uses RSeQC's bam_stat.py to check alignment metrics of BAM files, incl
 To obtain `bam_stat.py` reports for sample BAMs in `cohort.config`, create input file for parallel processing:
 
 ```
-sh bam_stat_make_input.sh cohort.config
+bash bam_stat_make_input.sh cohort.config
 ```
 
 `bam_stat_run_parallel.pbs` will run task script `bam_stat.sh` with `bam_stat.py` default settings applied.
@@ -398,7 +398,7 @@ Edit `bam_stat_run_parallel.pbs` by:
 Once `bam_stat_run_parallel.pbs` is complete, you can summarize reports using:
 
 ```
-sh multiqc.sh ../QC_reports/cohort_final_bams_bam_stat
+bash multiqc.sh ../QC_reports/cohort_final_bams_bam_stat
 ```
 
 #### summarise_STAR_alignment_stats.pl
@@ -423,7 +423,7 @@ This step runs samtools idxstats for all BAMs in a directory, and summarize the 
 Run this on the login node, providing the path to your directory containing BAM files, e.g.:
   
 ```
-sh samtools_idxstats_final_bams.sh ../cohort_final_bams
+bash samtools_idxstats_final_bams.sh ../cohort_final_bams
 ```
 
 ### 6. Raw counts
@@ -440,7 +440,7 @@ To obtain counts from final BAMs for sample IDs in `cohort.config`:
   * Create input file for parallel processing:
 
 ```
-sh htseq-count_custom_make_input.sh cohort.config
+bash htseq-count_custom_make_input.sh cohort.config
 ```
 Note: `htseq-count_custom_make_input.sh` will search for all .final.bam in cohort_final_bams, including sample flowcell level BAMs if available. To use only sample level bams, create inputs with `htseq-count_make_input.sh`
 
@@ -489,7 +489,7 @@ To obtain TPM normalized counts across features for samples in `cohort.config`, 
 * Create the input file for parallel processing:
 
 ```
-sh tpmcalculator_make_input.sh cohort.config
+bash tpmcalculator_make_input.sh cohort.config
 ```
 
 `tpmcalculator_run_parallel.pbs` will run task script `tpmcalculator.sh`. By default, this applies the TPMCalculator's developer's settings and addtional settings including:
