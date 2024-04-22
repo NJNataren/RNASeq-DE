@@ -1,0 +1,15 @@
+####################################
+# Gene annotation and DNA primary assembly file download
+####################################
+#
+# Author: Nathalie Nataren
+# Date: 22/04/2024
+# =======================
+# Gene annotation .gtf files for the human genome were downloaded from:
+# https://ftp.ensembl.org/pub/release-111/gtf/homo_sapiens/
+# =======================
+#
+# =======================
+# Genome primary assembly downloaded from:
+# https://ftp.ensembl.org/pub/release-111/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
+# =======================
