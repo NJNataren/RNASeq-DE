@@ -6,7 +6,7 @@
 # Date: 22/04/2024
 # =======================
 # Gene annotation .gtf files for the human genome were downloaded from:
-# https://ftp.ensembl.org/pub/release-111/gtf/homo_sapiens/
+# https://ftp.ensembl.org/pub/release-111/gtf/homo_sapiens/Homo_sapiens.GRCh38.111.gtf.gz
 # =======================
 #
 # =======================
