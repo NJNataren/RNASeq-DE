@@ -1,0 +1,424 @@
+---
+title: "genotype_labelling_and_config_manifest_creation_PRAME_YRI_CEPH"
+author: "Nathalie Nataren"
+date: "2024-04-24"
+---
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# BACKGROUND 
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  
+# The aim of this analysis is to select CEPH and YRI samples with phase 3 IGSR genotype data only 
+# to compare eQTLs to gene expression.
+# The analysis will look at PRAME CEPH eQTL rs6002690.
+# Need to annotate the genotypes for each individual and then merge this information with the ftp downloads
+# This will be done for both the CEPH and YRI populations
+# link metadata to download RNAseq fastq files for only 
+# the genotype annotated subset of 1K genome CEPH and YRI individuals
+
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Read in CEPH and YRI Genotype data and annotate column types
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+library(tidyverse)
+# Path to .csv file
+path_ceph = "data/raw_data/373514-SampleGenotypes-Homo_sapiens_Variation_Sample_rs6002690_ceph.csv"
+path_yri = "data/raw_data/373538-SampleGenotypes-Homo_sapiens_Variation_Sample_rs6002690_yri.csv"
+
+# Read in data
+df_ceph_unlabelled <- read_delim(path_ceph, delim = ",")
+df_yri_unlabelled <- read_delim(path_yri, delim = ",")
+
+# store the column types for import
+col_check_ceph <- spec(df_ceph_unlabelled)
+col_check_yri <- spec(df_yri_unlabelled)
+
+# read in data with the correct column types
+df_ceph <- read_delim(path_ceph, delim = ",", col_types = col_check_ceph)
+df_yri <- read_delim(path_yri, delim = ",", col_types = col_check_yri)
+
+# remove unrequired data frame
+rm(df_ceph_unlabelled)
+rm(df_yri_unlabelled)
+
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# genotype_annot- function to clean data and annotate genotypes
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+genotype_annot <-function(df, Ref_allele, Alt_allele){
+  # extract the genders
+  df[c("Sample", "gender")] <- str_split_fixed(df$`Sample (Male/Female/Unknown)`, " ", 2)
+  df$gender <- gsub("\\(|\\)", "", df$gender)
+
+  # Define all the possible genotypes
+  Homozygous_Ref = paste(Ref_allele,"|",Ref_allele, sep = "")
+  Homozygous_Alt = paste(Alt_allele,"|",Alt_allele, sep = "")
+  Heterozygous_1 = paste(Ref_allele,"|",Alt_allele, sep = "")
+  Heterozygous_2 = paste(Alt_allele,"|",Ref_allele, sep = "")
+
+  # Check the allele symbol genotype in df$`Genotype (forward strand)` and generate label in corresponding genotype column
+  df <-df %>% 
+    mutate(genotype = case_when(
+      str_equal(Homozygous_Ref, df$`Genotype (forward strand)`) ~ "HOMO_REF",
+      str_equal(Homozygous_Alt, df$`Genotype (forward strand)`) ~ "HOMO_ALT",
+      str_equal(Heterozygous_1, df$`Genotype (forward strand)`) ~ "HET",
+      str_equal(Heterozygous_2, df$`Genotype (forward strand)`) ~ "HET")) %>% 
+    select(Sample, `Genotype (forward strand)`, gender, genotype, `Population(s)`)
+
+  # Rename columns to remove white space
+  colnames(df)<-c("Sample", "genotype_forward_strand", "gender", "genotype", "population")
+
+  return(df)
+  }
+
+#####################################################
+# Use the genotype_annot function to label genotypes
+#####################################################
+
+# Annotated dataframes for Utah residents (CEPH) and Yoruba (YRI)
+df_ceph_annot <- genotype_annot(df = df_ceph, Ref_allele = "C", Alt_allele = "A")
+df_yri_annot <- genotype_annot(df = df_yri, Ref_allele = "C", Alt_allele = "A")
+
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Filter the metadata file containing ftp links for samples with matching genotype data
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+###########################################
+# Store the sample ids for each population
+###########################################
+
+# Store the geuvadis population_sample_id to merge with the input metadata .tsv files
+ceph_sample_id <- df_ceph_annot %>% 
+  select(Sample)
+
+yri_sample_id <- df_yri_annot %>% 
+  select(Sample)
+
+###########################################
+# Read in metadata files
+###########################################
+
+# path to CEPH and YRI metadata file 
+path_ceph_meta = "data/raw_data/igsr_Utah_residents_CEPH_with_Northern_and_Western_European_ancestry_undefined.tsv"
+path_yri_meta = "data/raw_data/igsr_Yoruba_in_Ibadan_Nigeria_YRI_undefined.tsv"
+
+# import the .tsv file and store as a data frame
+df_ceph_import <- read_delim(path_ceph_meta, delim = "\t")
+df_yri_import <- read_delim(path_yri_meta, delim = "\t")
+
+# retrieve a list of column types
+col_check_ceph_meta <- spec(df_ceph_import )
+col_check_yri_meta <- spec(df_yri_import)
+
+# import .tsv and provide specific column types
+ceph_raw_meta <- read_delim(path_ceph_meta, delim = "\t", col_types = col_check_ceph_meta)
+yri_raw_meta <- read_delim(path_yri_meta, delim = "\t", col_types = col_check_yri_meta)
+
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# create_config- a function to generate a config file from metadata
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+# Will need to populate some of columns with the same entry for all rows (DATASET, REFERENCE_GRCh38_GRCm38, 
+# SEQUENCING_CENTRE, PLATFORM, RUN_TYPE_SINGLE_PAIRED, LIBRARY)
+create_config <- function(df, population_sample_id, ERR_study_id, dataset, reference, seq_centre, platform, run_type, library_paired){
+
+  # Store the url column as a dataframe, extract sample ID from these
+  # url_links <- df$url %>% as.data.frame()
+  # colnames(url_links)<-c("url")
+
+  
+  # Extract the Geuvadis identifiers from the URL and split into study, sample and fastq ids
+  # df$identifier <- str_extract(df$url, "(?<=fastq/).*(?=.fastq.gz)")  
+  df$identifier <- str_extract(df$url, "(?<=fastq/).*")  
+  df[c("geuvadis_study_id", "geuvadis_sample_id", "fastq")] <- str_split_fixed(df$identifier, '/', 3)
+  # # df$sampleid <-str_extract(df$fastq,".*(?=.fastq.gz)")
+  # df$sampleid <- df %>% select(df$Sample)
+  df %>% filter(Sample %in% population_sample_id$Sample)
+  df <- df[df$geuvadis_study_id == ERR_study_id, ]
+  #ceph_raw_meta$geuvadis_sample_id <- trimws(ceph_raw_meta$geuvadis_sample_id)  
+  
+
+  # sort by the fastq id 
+  df <- df[order(df$fastq), ]
+  # to automatically populate rows, count the number of rows (files) in the patient metadata data frame above
+  metadata_entries <- nrow(df)
+
+  # Store the fastq file names to create a new config data frame
+  FASTQ <- df$fastq %>% data.frame()
+  colnames(FASTQ) <-c("#FASTQ")
+
+  # Store the fastq file names to create a new config data frame
+  SAMPLEID <- df$Sample %>% data.frame()
+  colnames(SAMPLEID) <-c("SAMPLEID")
+
+  # Set variables for auto filling of columns
+  dataset_entry<- dataset
+  reference_entry <- reference
+  seq_centre_entry <- seq_centre
+  platform_entry <- platform
+  run_type_entry <- run_type
+
+  # If you input libraries_paired = TRUE
+  libraries_are_paired <- metadata_entries/2 #meta data entry number is halved, as each sample would have fastq_1 and fastq_2
+  each_library_paired = 2 # this parameter is used by rep() when defning LIBRARY below
+  
+  # If you input libraries_paired = FALSE
+  libraries_are_single <- metadata_entries #meta data entry number is equal to total entry, as each sample would have one fastq
+  each_library_single = 1 # this parameter is used by rep() when defning LIBRARY below
+
+  # Set the libraries per sample and each_library 
+  library_per_sample <- ifelse (library_paired == TRUE, libraries_are_paired, libraries_are_single)
+  each_library <- ifelse (library_paired == TRUE, each_library_paired, each_library_single)
+
+  #================================
+  # Construct the config data frame
+  #================================
+  
+  # Create DATASET entries based on the number of rows in the metadata data frame 
+  DATASET <- data.frame(rep(dataset_entry , times = metadata_entries), row.names = NULL)
+  colnames(DATASET) <- c("DATASET")
+
+  # Create REFERENCE_GRCh38_GRCm38 entries based on the number of rows in the metadata data frame 
+  REFERENCE_GRCh38_GRCm38 <-data.frame(rep(reference_entry, times = metadata_entries), row.names = NULL)
+  colnames(REFERENCE_GRCh38_GRCm38) <- c("REFERENCE_GRCh38_GRCm38")
+  
+  # Create SEQUENCING_CENTRE entries based on the number of rows in the metadata data frame 
+  SEQUENCING_CENTRE <-data.frame(rep(seq_centre_entry, times = metadata_entries), row.names = NULL)
+  colnames(SEQUENCING_CENTRE) <- c("SEQUENCING_CENTRE")
+
+  # Create PLATFORM entries based on the number of rows in the metadata data frame 
+  PLATFORM <-data.frame(rep(platform_entry, times = metadata_entries), row.names = NULL)
+  colnames(PLATFORM) <- c("PLATFORM")
+  
+  # Create RUN_TYPE_SINGLE_PAIRED entries based on the number of rows in the metadata data frame 
+  RUN_TYPE_SINGLE_PAIRED <- data.frame(rep(run_type_entry, times = metadata_entries), row.names = NULL)
+  colnames(RUN_TYPE_SINGLE_PAIRED) <- c("RUN_TYPE_SINGLE_PAIRED")
+
+  # Create LIBRARY number entries based on the number of rows in the metadata data frame (divided by 2 if the libraries are paired)
+  LIBRARY <- data.frame(rep(seq(library_per_sample), each = each_library))
+  colnames(LIBRARY) <- c("LIBRARY")
+
+  # Concatenate all of the data frames
+  config <- cbind(
+    FASTQ,
+    SAMPLEID,
+    DATASET,
+    REFERENCE_GRCh38_GRCm38,
+    SEQUENCING_CENTRE,
+    PLATFORM,
+    RUN_TYPE_SINGLE_PAIRED,
+    LIBRARY
+    )
+  return(config)
+}
+
+ceph_config <- create_config(
+  df = ceph_raw_meta, 
+  population_sample_id = ceph_sample_id,
+  ERR_study_id = "ERR188",
+  dataset = "CEPH", 
+  reference = "GRCh38", 
+  seq_centre = "Geuvadis", 
+  platform = "ILLUMINA", 
+  run_type = "PAIRED", 
+  library_paired = TRUE
+  )
+
+yri_config <- create_config(
+  df= yri_raw_meta,
+  population_sample_id = yri_sample_id,
+  ERR_study_id = "ERR188",
+  dataset = "YRI",
+  reference = "GRCh38",
+  seq_centre = "Geuvadis",
+  platform = "ILLUMINA",
+  run_type = "PAIRED",
+  library_paired = TRUE
+)
+
+# Write .config file as a plain text, tab delimited file
+write.table(ceph_config,"output/CEPH.config", sep = "\t", row.names = FALSE, quote = FALSE)
+write.table(yri_config,"output/YRI.config", sep = "\t", row.names = FALSE, quote = FALSE)
+
+ceph_check <- ceph_config %>% filter(SAMPLEID %in% ceph_sample_id$Sample)
+yri_check <- yri_config %>% filter(SAMPLEID %in% yri_sample_id$Sample)
+
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Create_ftp_manifest function- manifest with urls for FTP download on HPC
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+create_ftp_manifest <- function(df, population_sample_id, ERR_study_id, dataset){
+  # Extract the Geuvadis identifiers from the URL and split into study, sample and fastq ids
+  # df$identifier <- str_extract(df$url, "(?<=fastq/).*(?=.fastq.gz)")  
+  df$identifier <- str_extract(df$url, "(?<=fastq/).*")  
+  df[c("geuvadis_study_id", "geuvadis_sample_id", "fastq")] <- str_split_fixed(df$identifier, '/', 3)
+  # # df$sampleid <-str_extract(df$fastq,".*(?=.fastq.gz)")
+  # df$sampleid <- df %>% select(df$Sample)
+  df %>% filter(Sample %in% population_sample_id$Sample)
+  df <- df[df$geuvadis_study_id == ERR_study_id, ]
+  #ceph_raw_meta$geuvadis_sample_id <- trimws(ceph_raw_meta$geuvadis_sample_id)  
+  
+
+  # sort by the fastq id 
+  df <- df[order(df$fastq), ]
+  # to automatically populate rows, count the number of rows (files) in the patient metadata data frame above
+  metadata_entries <- nrow(df)
+  
+  # Set variables for auto filling of columns
+  dataset_entry<- dataset
+  
+  # Store the fastq file names to create a new config data frame
+  FASTQ <- df$fastq %>% data.frame()
+  colnames(FASTQ) <-c("#FASTQ")
+
+  # Store the fastq file names to create a new config data frame
+  SAMPLEID <- df$Sample %>% data.frame()
+  colnames(SAMPLEID) <-c("SAMPLEID")
+  
+  # Create DATASET entries based on the number of rows in the metadata data frame 
+  DATASET <- data.frame(rep(dataset_entry , times = metadata_entries), row.names = NULL)
+  colnames(DATASET) <- c("DATASET")
+  
+  # Create URL entries with ftp download urls
+  URL <- df$url %>% data.frame()
+  colnames(URL) <- c("url")
+  
+  manifest <- cbind(
+    FASTQ,
+    SAMPLEID,
+    DATASET,
+    URL
+    )
+  return(manifest)
+}
+
+# ======================================
+# Generate ftp manifests for CEPH and YRI
+# ======================================
+
+ceph_manifest<- create_ftp_manifest(
+  df = ceph_raw_meta, 
+  population_sample_id = ceph_sample_id, 
+  ERR_study_id = "ERR188", 
+  dataset = "CEPH"
+  )
+
+yri_manifest<- create_ftp_manifest(
+  df = yri_raw_meta, 
+  population_sample_id = ceph_sample_id, 
+  ERR_study_id = "ERR188", 
+  dataset = "YRI"
+  )
+
+# Write manifext file as a plain text, tab delimited file
+write.table(ceph_manifest,"output/CEPH_manifest.txt", sep = "\t", row.names = FALSE, quote = FALSE)
+write.table(yri_manifest,"output/YRI_manifest.txt", sep = "\t", row.names = FALSE, quote = FALSE)
+
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Create a testing subset for CEPH and YRI
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# =================================
+# Testing subset .config for CEPH 
+# =================================
+
+# Create a .config and ftp manifest for testing subset of 30 samples for each population
+# CEPH test cohort .config
+# Order the full .config by ssample
+ceph_config_sorted_sample <- ceph_config[order(ceph_config$SAMPLEID, decreasing = FALSE ), ]
+
+# Take a subset of 30 samples and remove the LIBRARY data for renumbering
+ceph_config_sorted_sample <- ceph_config_sorted_sample[1:60, ]
+col_remov_ceph <- names(ceph_config_sorted_sample) %in% c("LIBRARY") # this defines which column to remove
+ceph_config_lib_rem <-ceph_config_sorted_sample[!col_remov_ceph]
+
+# Count the number of rows to determine the number of libraries
+# Define the number of entries expected depending on the library type
+libraries_paired_ceph <- (nrow(ceph_config_lib_rem)) / 2
+
+LIBRARY_ceph <- data.frame(rep(seq(libraries_paired_ceph), each = 2))
+colnames(LIBRARY_ceph) <- c("LIBRARY")
+
+# Combine the test.config with new library numbering data frame and export to plain text
+ceph_test_config <- cbind(
+    ceph_config_lib_rem,
+    LIBRARY_ceph
+)
+
+write.table(ceph_test_config,"output/CEPH_test.config", sep = "\t", row.names = FALSE, quote = FALSE)
+
+# =================================
+# Testing subset .config for YRI
+# =================================
+
+# Create a .config and ftp manifest for testing subset of 30 samples for each population
+# CEPH test cohort .config
+# Order the full .config by ssample
+yri_config_sorted_sample <- yri_config[order(yri_config$SAMPLEID, decreasing = FALSE ), ]
+
+# Take a subset of 30 samples and remove the LIBRARY data for renumbering
+yri_config_sorted_sample <- yri_config_sorted_sample[1:60, ]
+col_remov_yri <- names(yri_config_sorted_sample) %in% c("LIBRARY") # this defines which column to remove
+yri_config_lib_rem <-yri_config_sorted_sample[!col_remov_yri]
+
+# Count the number of rows to determine the number of libraries
+# Define the number of entries expected depending on the library type
+libraries_paired_yri <- (nrow(yri_config_lib_rem)) / 2
+
+LIBRARY_yri <- data.frame(rep(seq(libraries_paired_yri), each = 2))
+colnames(LIBRARY_yri) <- c("LIBRARY")
+
+# Combine the test.config with new library numbering data frame and export to plain text
+yri_test_config <- cbind(
+    yri_config_lib_rem,
+    LIBRARY_yri
+)
+
+write.table(yri_test_config,"output/YRI_test.config", sep = "\t", row.names = FALSE, quote = FALSE)
+
+# =================================================
+# Testing subset download manifest for CEPH and YRI
+# =================================================
+
+# CEPH manifest
+ceph_manifest_sorted <- ceph_manifest[order(ceph_manifest$SAMPLEID, decreasing = FALSE), ]
+ceph_test_manifest  <- ceph_manifest_sorted[1:60, ]
+
+# YRI manifest
+yri_manifest_sorted <- yri_manifest[order(yri_manifest$SAMPLEID, decreasing = FALSE), ]
+yri_test_manifest  <- yri_manifest_sorted[1:60, ]
+
+# Write manifext file as a plain text, tab delimited file
+write.table(ceph_test_manifest,"output/CEPH_test_manifest.txt", sep = "\t", row.names = FALSE, quote = FALSE)
+write.table(yri_test_manifest,"output/YRI_test_manifest.txt", sep = "\t", row.names = FALSE, quote = FALSE)
+
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Session Info
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+# R version 4.4.0 (2024-04-24)
+# Platform: x86_64-pc-linux-gnu
+# Running under: Ubuntu 22.04.4 LTS
+# 
+# Matrix products: default
+# BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.10.0 
+# LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.10.0
+# 
+# locale:
+#  [1] LC_CTYPE=en_AU.UTF-8       LC_NUMERIC=C               LC_TIME=en_AU.UTF-8        LC_COLLATE=en_AU.UTF-8     LC_MONETARY=en_AU.UTF-8    LC_MESSAGES=en_AU.UTF-8   
+#  [7] LC_PAPER=en_AU.UTF-8       LC_NAME=C                  LC_ADDRESS=C               LC_TELEPHONE=C             LC_MEASUREMENT=en_AU.UTF-8 LC_IDENTIFICATION=C       
+# 
+# time zone: Australia/Adelaide
+# tzcode source: system (glibc)
+# 
+# attached base packages:
+# [1] stats     graphics  grDevices utils     datasets  methods   base     
+# 
+# other attached packages:
+#  [1] lubridate_1.9.3 forcats_1.0.0   stringr_1.5.1   dplyr_1.1.4     purrr_1.0.2     readr_2.1.5     tidyr_1.3.1     tibble_3.2.1    ggplot2_3.5.1   tidyverse_2.0.0
+# 
+# loaded via a namespace (and not attached):
+#  [1] bit_4.0.5           archive_1.1.8       gtable_0.3.5        crayon_1.5.2        compiler_4.4.0      BiocManager_1.30.23 tidyselect_1.2.1    parallel_4.4.0      scales_1.3.0       
+# [10] yaml_2.3.8          fastmap_1.1.1       R6_2.5.1            generics_0.1.3      knitr_1.46          munsell_0.5.1       pillar_1.9.0        tzdb_0.4.0          rlang_1.1.3        
+# [19] utf8_1.2.4          stringi_1.8.4       xfun_0.43           bit64_4.0.5         timechange_0.3.0    cli_3.6.2           withr_3.0.0         magrittr_2.0.3      digest_0.6.35      
+# [28] grid_4.4.0          vroom_1.6.5         rstudioapi_0.16.0   hms_1.1.3           lifecycle_1.0.4     vctrs_0.6.5         evaluate_0.23       glue_1.7.0          fansi_1.0.6        
+# [37] colorspace_2.1-0    rmarkdown_2.26      tools_4.4.0         pkgconfig_2.0.3     htmltools_0.5.8.1  
+
