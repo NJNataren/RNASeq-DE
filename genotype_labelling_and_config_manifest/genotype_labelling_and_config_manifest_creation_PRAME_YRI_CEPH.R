@@ -15,6 +15,27 @@ date: "2024-04-24"
 # link metadata to download RNAseq fastq files for only 
 # the genotype annotated subset of 1K genome CEPH and YRI individuals
 
+# ==================================
+# Genotype data availability
+# ==================================
+
+# Genotypes for eQTL rs6002690 in CEPH downloaded from the "Genotypes for 1000GENOMES:phase_3:YRI" table at the following site:
+# https://asia.ensembl.org/Homo_sapiens/Variation/Population?v=rs6002690;vdb=variation#373514_tablePanel
+
+# Genotypes for eQTL rs6002690 in YRI downloaded from the "Genotypes for 1000GENOMES:phase_3:YRI" table at the following site:
+# https://asia.ensembl.org/Homo_sapiens/Variation/Population?v=rs6002690;vdb=variation#373538_tablePanel
+
+# ==========================================
+# Population Geuvadis metadata availability
+# ==========================================
+
+# The CEPH (aka CEU) Geuvadis Transcriptomic data metadata file was downloaded from https://www.internationalgenome.org/data-portal/population/CEU
+# and then selecting the Geuvadis data collection and selecting "mRNA" under "Technologies" 
+
+# The YRI Geuvadis Transcriptomic data metadata file was downloaded from https://www.internationalgenome.org/data-portal/population/YRI
+# and then selecting the Geuvadis data collection and selecting "mRNA" under "Technologies" 
+
+
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Read in CEPH and YRI Genotype data and annotate column types
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
