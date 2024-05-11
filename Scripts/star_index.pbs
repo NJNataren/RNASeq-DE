@@ -35,7 +35,7 @@ set -e
 #PBS -P <project>
 #PBS -N star_index
 #PBS -l walltime=02:00:00,ncpus=9,mem=64GB,wd
-#PBS -q normal
+#PBS -q express
 #PBS -W umask=022
 #PBS -l storage=scratch/<project>
 #PBS -o ./Logs/star_index.o
