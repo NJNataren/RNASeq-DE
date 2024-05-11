@@ -29,6 +29,7 @@ fi
 
 config=$1
 cohort=$(basename "$config" | cut -d'.' -f 1)
+logs=./Logs/fastQC_trimmed
 INPUTS=./Inputs
 unsorted=${INPUTS}/fastqc_trimmed.inputs_unsorted
 input_file=${INPUTS}/fastqc_trimmed.inputs
@@ -42,7 +43,7 @@ rm -rf ${input_file}
 while read -r fastq sampleid dataset reference seqcentre platform run_type library; do
 	if [[ ! ${fastq} =~ ^#.*$ ]]; then
 		basename=$(basename "$fastq" | cut -d. -f1)
-		
+		in=../${dataset}_trimmed/${basename}_trimmed.fastq.gz
 		logdir=${logs}/${cohort}/${dataset}_trimmed
 		logfile=${logdir}/${basename}.log
 		out=../${dataset}\_fastQC_trimmed
