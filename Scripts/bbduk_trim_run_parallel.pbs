@@ -49,6 +49,9 @@ module load bbmap/38.93
 
 mkdir -p ./Logs
 
+# Provide bbmap path to bash
+export PATH=$PATH:/apps/bbmap/38.93/opt/bbmap-38.93-0
+
 # NCPUs = CPUs per task
 NCPUS=6
 
