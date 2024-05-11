@@ -21,7 +21,7 @@ set -e
 #
 #########################################################
 
-module load bbmap/37.98
+module load bbmap/38.98
 
 fastq1=`echo $1 | cut -d ',' -f 1`
 fastq2=`echo $1 | cut -d ',' -f 2`
@@ -35,6 +35,10 @@ NCPUS=`echo $1 | cut -d ',' -f 8`
 basename=$(basename "$fastq1" | cut -d. -f1)
 uniq_basename="${basename::-1}"
 logfile=${logdir}/${uniq_basename}trimming.log
+
+# Export the bbmap directory to path to avoid error thrown by bbduk, "******  WARNING! A KMER OPERATION WAS CHOSEN BUT NO KMERS WERE LOADED.  ******
+# ******  YOU NEED TO SPECIFY A REFERENCE FILE OR LITERAL SEQUENCE.       ******"
+export PATH=$PATH:/apps/bbmap/38.93/opt/bbmap-38.93-0
 
 rm -rf ${logfile}
 
