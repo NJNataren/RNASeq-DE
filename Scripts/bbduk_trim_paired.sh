@@ -21,7 +21,7 @@ set -e
 #
 #########################################################
 
-module load bbtools/37.98
+module load bbmap/37.98
 
 fastq1=`echo $1 | cut -d ',' -f 1`
 fastq2=`echo $1 | cut -d ',' -f 2`
