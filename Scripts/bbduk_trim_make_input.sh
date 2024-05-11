@@ -48,6 +48,8 @@ rm -rf ${single}
 rm -rf ${paired}
 
 # The path to the bbtools adapters.fa application is provided below
+adapters=/apps/bbmap/38.93/opt/bbmap-38.93-0/resources/adapters.fa
+
 # bbtools is part of the bbmap version 38.93 package
 
 while read -r fastq sampleid dataset reference seqcentre platform run_type library; do
