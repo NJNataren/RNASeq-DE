@@ -33,7 +33,7 @@ logdir=./Logs/bam_stat
 INPUTS=./Inputs
 input_file=${INPUTS}/bam_stat.inputs
 bamdir=../${cohort}_final_bams
-outdir=../QC_reports/${cohort}_final_bams
+outdir=../QC_reports/${cohort}_final_bams_bam_stat
 
 mkdir -p ${INPUTS} ${outdir} ${logdir}
 
