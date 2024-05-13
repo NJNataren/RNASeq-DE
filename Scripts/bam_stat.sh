@@ -26,6 +26,8 @@ set -e
 # the path to the miniconda environment needs to be exported to the bash environment PATH with the line below.
 # Provide the name of your environment in the path below
 export PYTHONPATH=$HOME/miniconda3/envs/<provide-name-of-conda-environment>/bin/python
+#  Activate the conda environment containing RSeQC
+source activate rnaseq-de
 
 sampleid=`echo $1 | cut -d ',' -f 1`
 bam=`echo $1 | cut -d ',' -f 2`
