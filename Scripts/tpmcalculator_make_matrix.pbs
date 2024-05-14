@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 #########################################################
 #
 # Platform: NCI Gadi HPC
@@ -21,19 +19,21 @@ set -e
 #
 #########################################################
 
-#PBS -P <project>
+#PBS -P bt64
 #PBS -N tpmtranscript_matrix
 #PBS -l walltime=05:00:00,ncpus=1,mem=96GB,wd
 #PBS -q express
 #PBS -W umask=022
-#PBS -l storage=scratch/<project>
+#PBS -l storage=scratch/bt64
 #PBS -l wd
 #PBS -o ./Logs/tpmcalculator_matrix.o
 #PBS -e ./Logs/tpmcalculator_matrix.e
 
+set -e
+
 # Set the PBS_O_WORKDIR to directory that the scripts are being queued from
-PBS_O_WORKDIR=/scratch/bt64/nn8573/test_dir/RNASeq-DE/Scripts
-cd ${PBS_O_WORKDIR}
+PBS_O_WORKDIR=/scratch/bt64/nn8573/etql/ceph/RNASeq-DE/Scripts
+cd "${PBS_O_WORKDIR}"
 
 # Replace with path to your TPMCalculator output
 tpmdir=../cohort_TPMCalculator
