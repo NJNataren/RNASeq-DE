@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 #########################################################
 #
 # Platform: NCI Gadi HPC
@@ -28,18 +26,20 @@ set -e
 # JobName        CPUs_requested  CPUs_used       Mem_requested   Mem_used        CPUtime CPUtime_mins    Walltime_req    Walltime_used   Walltime_mins   JobFS_req        JobFS_used      Efficiency      Service_units(CPU_hours)        Job_exit_status
 # read_distribution.o     56      56      256.0GB 175.35GB        89:44:14        5384.23 02:00:00        01:50:20        110.33  200.0MB 8.16MB  0.87    128.72   0
 
-#PBS -P <project>
+#PBS -P bt64
 #PBS -N read_distribution
 #PBS -l walltime=04:00:00,ncpus=56,mem=256GB,wd
 #PBS -q normalbw
 #PBS -W umask=022
-#PBS -l storage=scratch/<project>
+#PBS -l storage=scratch/bt64
 #PBS -o ./Logs/read_distribution.o
 #PBS -e ./Logs/read_distribution.e
 
+set -e
+
 # Set the PBS_O_WORKDIR to the scripts directory where the jobs are being queued from
-PBS_O_WORKDIR=/scratch/bt64/nn8573/test_dir/RNASeq-DE/Scripts
-cd ${PBS_O_WORKDIR}
+PBS_O_WORKDIR=/scratch/bt64/nn8573/etql/ceph/RNASeq-DE/Scripts
+cd "${PBS_O_WORKDIR}"
 
 # Export the miniconda3 environment path
 export PATH=$HOME/miniconda3/envs/rnaseq-de/bin:$PATH
