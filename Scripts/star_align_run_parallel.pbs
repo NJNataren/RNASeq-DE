@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 #########################################################
 #
 # Platform: NCI Gadi HPC
@@ -38,9 +36,11 @@ set -e
 #PBS -o ./Logs/star_align_trimmed_unmapped_out.o
 #PBS -e ./Logs/star_align_trimmed_unmapped_out.e
 
+set -e
+
 # Set the PBS_O_WORKDIR to the scripts directory where the jobs are being queued from
-PBS_O_WORKDIR=/scratch/bt64/nn8573/test_dir/RNASeq-DE/Scripts
-cd ${PBS_O_WORKDIR}
+PBS_O_WORKDIR=/scratch/bt64/nn8573/etql/ceph/RNASeq-DE/Scripts
+cd "${PBS_O_WORKDIR}"
 
 # Export the miniconda3 environment path
 export PATH=$HOME/miniconda3/bin:$PATH
