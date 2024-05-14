@@ -22,8 +22,8 @@ set -e
 #########################################################
 
 # Set the PBS_O_WORKDIR to the scripts directory where the jobs are being queued from
-PBS_O_WORKDIR=/scratch/bt64/nn8573/test_dir/RNASeq-DE/Scripts
-cd ${PBS_O_WORKDIR}
+PBS_O_WORKDIR=/scratch/bt64/nn8573/etql/ceph/RNASeq-DE/Scripts
+cd "${PBS_O_WORKDIR}"
 
 # Activate conda base to access rseqc
 export PATH=$HOME/miniconda3/envs/rnaseq-de/bin:$PATH
@@ -40,7 +40,7 @@ fi
 
 bamdir=$(echo $1 | sed 's/\/$//')
 outfileprefix=$(basename $bamdir)
-refbed=../Reference/GRCh38/Homo_sapiens.GRCh38.103.bed
+refbed=../Reference/GRCh38/Homo_sapiens.GRCh38.111.bed
 outdir=../QC_reports/${outfileprefix}_infer_experiment
 outfile=${outdir}/${outfileprefix}.txt
 
