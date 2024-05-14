@@ -25,7 +25,7 @@ set -e
 # I have uninstalled software for this pipeline
 # the path to the miniconda environment needs to be exported to the bash environment PATH with the line below.
 # Provide the name of your environment in the path below
-export PYTHONPATH=$HOME/miniconda3/envs/<provide-name-of-conda-environment>/bin/python
+export PYTHONPATH=$HOME/miniconda3/envs/rnaseq-de/bin/python
 #  Activate the conda environment containing RSeQC
 source activate rnaseq-de
 
