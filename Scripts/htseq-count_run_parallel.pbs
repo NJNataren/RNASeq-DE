@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 #########################################################
 #
 # Platform: NCI Gadi HPC
@@ -25,18 +23,18 @@ set -e
 # Future - run each BAM as an independant job
 # Could also try order inputs by BAM size (descending)
 
-#PBS -P <project>
+#PBS -P bt64
 #PBS -N htseq-count
 #PBS -l walltime=30:00:00,ncpus=240,mem=950GB,wd
 #PBS -q normal
 #PBS -W umask=022
-#PBS -l storage=scratch/<project>
+#PBS -l storage=scratch/bt64
 #PBS -o ./Logs/htseq-count.o
 #PBS -e ./Logs/htseq-count.e
 
 # Set the PBS_O_WORKDIR to the scripts directory where the jobs are being queued from
-PBS_O_WORKDIR=/scratch/bt64/nn8573/test_dir/RNASeq-DE/Scripts
-cd ${PBS_O_WORKDIR}
+PBS_O_WORKDIR=/scratch/bt64/nn8573/etql/ceph/RNASeq-DE/Scripts
+cd "${PBS_O_WORKDIR}"
 
 # The htseq package is in the rnaseq-de conda bin, so thats the env we export
 export PATH=$HOME/miniconda3/bin:$PATH
