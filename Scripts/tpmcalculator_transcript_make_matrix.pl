@@ -76,7 +76,7 @@ foreach my $sampleid (@sampleids){
 		# Save ensembl gene ID for each transcript ID
 		$geneidhash->{$transcript}->{geneid}=$gene;
 	}
- 	close(FILE):=; # Close the file handle
+ 	close(FILE); # Close the file handle
         $i++;
 }
 
