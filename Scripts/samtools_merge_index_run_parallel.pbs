@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 #########################################################
 #
 # Platform: NCI Gadi HPC
@@ -37,18 +35,24 @@ set -e
 # ~882 samples including ~10 multiplexed, use
 # #PBS -l walltime=05:00:00,ncpus=48,mem=190GB,wd
 
-#PBS -P <project>
+#PBS -P bt64
 #PBS -N samtools_merge_index
 #PBS -l walltime=5:00:00,ncpus=48,mem=190GB,wd
 #PBS -q normal
 #PBS -W umask=022
-#PBS -l storage=scratch/<project>
+#PBS -l storage=scratch/bt64
 #PBS -o ./Logs/samtools_merge_index.o
 #PBS -e ./Logs/samtools_merge_index.e
+
+set -e
 
 module load openmpi/4.0.2
 module load nci-parallel/1.0.0a
 module load samtools/1.10
+
+# Set the PBS_O_WORKDIR to the scripts directory where the jobs are being queued from
+PBS_O_WORKDIR=/scratch/bt64/nn8573/etql/ceph/RNASeq-DE/Scripts
+cd "${PBS_O_WORKDIR}"
 
 mkdir -p ./Logs
 
