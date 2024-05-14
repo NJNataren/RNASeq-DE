@@ -30,17 +30,17 @@ set -e
 # -q normal
 
 #PBS -l jobfs=200GB
-#PBS -P <project>
+#PBS -P bt64
 #PBS -N bbduk_trim
 #PBS -l walltime=02:00:00,ncpus=48,mem=190GB,wd
 #PBS -q normal
 #PBS -W umask=022
-#PBS -l storage=scratch/<project>
+#PBS -l storage=scratch/bt64
 #PBS -o ./Logs/bbduk_trim.o
 #PBS -e ./Logs/bbduk_trim.e
 
 # Set the PBS_O_WORKDIR to the scripts directory where the jobs are being queued from
-PBS_O_WORKDIR=/scratch/bt64/nn8573/test_dir/RNASeq-DE/Scripts
+PBS_O_WORKDIR=/scratch/bt64/nn8573/eqtl/ceph/RNASeq-DE/Scripts
 cd ${PBS_O_WORKDIR}
 
 module load openmpi/4.1.5
