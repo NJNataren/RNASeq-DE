@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 #########################################################
 #
 # Platform: NCI Gadi HPC
@@ -40,6 +38,8 @@ set -e
 #PBS -l storage=scratch/<project>
 #PBS -o ./Logs/star_index.o
 #PBS -e ./Logs/star_index.e
+
+set -e
 
 # Load modules
 module load STAR/2.7.11b
