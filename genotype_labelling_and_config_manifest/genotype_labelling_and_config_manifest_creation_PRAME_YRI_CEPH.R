@@ -148,12 +148,10 @@ create_config <- function(df, population_sample_id, ERR_study_id, dataset, refer
 
   
   # Extract the Geuvadis identifiers from the URL and split into study, sample and fastq ids
-  # df$identifier <- str_extract(df$url, "(?<=fastq/).*(?=.fastq.gz)")  
   df$identifier <- str_extract(df$url, "(?<=fastq/).*")  
   df[c("geuvadis_study_id", "geuvadis_sample_id", "fastq")] <- str_split_fixed(df$identifier, '/', 3)
-  # # df$sampleid <-str_extract(df$fastq,".*(?=.fastq.gz)")
-  # df$sampleid <- df %>% select(df$Sample)
-  df %>% filter(Sample %in% population_sample_id$Sample)
+  # merge the df with population_sample_id to create config only for samples with genotype data
+  df <- merge(df, population_sample_id, by.x = "Sample", by.y = "Sample")
   df <- df[df$geuvadis_study_id == ERR_study_id, ]
   #ceph_raw_meta$geuvadis_sample_id <- trimws(ceph_raw_meta$geuvadis_sample_id)  
   
@@ -272,9 +270,9 @@ create_ftp_manifest <- function(df, population_sample_id, ERR_study_id, dataset)
   # df$identifier <- str_extract(df$url, "(?<=fastq/).*(?=.fastq.gz)")  
   df$identifier <- str_extract(df$url, "(?<=fastq/).*")  
   df[c("geuvadis_study_id", "geuvadis_sample_id", "fastq")] <- str_split_fixed(df$identifier, '/', 3)
-  # # df$sampleid <-str_extract(df$fastq,".*(?=.fastq.gz)")
-  # df$sampleid <- df %>% select(df$Sample)
-  df %>% filter(Sample %in% population_sample_id$Sample)
+  
+  # merge the df with population_sample_id to create config only for samples with genotype data
+  df <- merge(df, population_sample_id, by.x = "Sample", by.y = "Sample")
   df <- df[df$geuvadis_study_id == ERR_study_id, ]
   #ceph_raw_meta$geuvadis_sample_id <- trimws(ceph_raw_meta$geuvadis_sample_id)  
   
@@ -325,7 +323,7 @@ ceph_manifest<- create_ftp_manifest(
 
 yri_manifest<- create_ftp_manifest(
   df = yri_raw_meta, 
-  population_sample_id = ceph_sample_id, 
+  population_sample_id = yri_sample_id, 
   ERR_study_id = "ERR188", 
   dataset = "YRI"
   )
