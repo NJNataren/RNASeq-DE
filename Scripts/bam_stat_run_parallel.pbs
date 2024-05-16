@@ -35,7 +35,7 @@
 set -e
 
 # Set the PBS working directory to script directory where jobs are queued
-PBS_O_WORKDIR=/scratch/bt64/nn8573/etql/ceph/RNASeq-DE/Scripts
+PBS_O_WORKDIR=/scratch/bt64/nn8573/eqtl/ceph/RNASeq-DE/Scripts
 cd "${PBS_O_WORKDIR}"
 
 module load openmpi/4.0.2
