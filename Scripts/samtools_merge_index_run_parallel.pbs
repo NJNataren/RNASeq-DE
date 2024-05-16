@@ -51,7 +51,7 @@ module load nci-parallel/1.0.0a
 module load samtools/1.10
 
 # Set the PBS_O_WORKDIR to the scripts directory where the jobs are being queued from
-PBS_O_WORKDIR=/scratch/bt64/nn8573/etql/ceph/RNASeq-DE/Scripts
+PBS_O_WORKDIR=/scratch/bt64/nn8573/eqtl/ceph/RNASeq-DE/Scripts
 cd "${PBS_O_WORKDIR}"
 
 mkdir -p ./Logs
