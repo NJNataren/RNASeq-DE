@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 #########################################################
 #
 # Platform: NCI Gadi HPC
@@ -39,9 +37,11 @@ set -e
 #PBS -o ./Logs/bbduk_trim.o
 #PBS -e ./Logs/bbduk_trim.e
 
+set -e
+
 # Set the PBS_O_WORKDIR to the scripts directory where the jobs are being queued from
 PBS_O_WORKDIR=/scratch/bt64/nn8573/eqtl/ceph/RNASeq-DE/Scripts
-cd ${PBS_O_WORKDIR}
+cd "${PBS_O_WORKDIR}"
 
 module load openmpi/4.1.5
 module load nci-parallel/1.0.0a
