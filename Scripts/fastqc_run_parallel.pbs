@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 #########################################################
 #
 # Platform: NCI Gadi HPC
@@ -27,14 +25,16 @@ set -e
 # -q normal
 # fastQC efficiency ~0.9 - 1
 
-#PBS -P <project>
+#PBS -P bt64
 #PBS -N fastqc
-#PBS -l walltime=01:30:00,ncpus=48,mem=190GB,wd
+#PBS -l walltime=03:00:00,ncpus=48,mem=190GB,wd
 #PBS -q normal
 #PBS -W umask=022
-#PBS -l storage=scratch/<project>
+#PBS -l storage=scratch/bt64
 #PBS -o ./Logs/fastqc.o
 #PBS -e ./Logs/fastqc.e
+
+set -e
 
 # Set the PBS_O_WORKDIR to the scripts directory where the jobs are being queued from
 PBS_O_WORKDIR=/scratch/bt64/nn8573/eqtl/ceph/RNASeq-DE/Scripts
